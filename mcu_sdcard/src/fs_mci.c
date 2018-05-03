@@ -32,7 +32,6 @@
 #include "fsmci_cfg.h"
 #include "chip.h"
 
-extern void feed_watchdog(void);
 
 /*****************************************************************************
  * Private types/enumerations/variables
@@ -190,10 +189,11 @@ DRESULT disk_read(BYTE drv, BYTE *buff, DWORD sector, UINT count)
 
     if (FSMCI_CardReadSectors(hCard, buff, sector, count)) {
 
-        // feed the watchdog: disk io may block relatively long,
-        // especially when reading / writing a lot of data
-        // (e.g. during sdcard format)
-        feed_watchdog();
+        // sdcard calls a user callback on every succesfull disk IO.
+        // The application may use this as a progress indicator or to
+        // feed a watchdog timer, since disk reads/writes may block relatively
+        // long and unpredictably.
+        sdcard_call_IO_cb();
         return RES_OK;
     }
 
@@ -221,11 +221,12 @@ DRESULT disk_write(BYTE drv, const BYTE *buff, DWORD sector, UINT count)
     }
 
     if ( FSMCI_CardWriteSectors(hCard, (void *) buff, sector, count)) {
-
-        // feed the watchdog: disk io may block relatively long,
-        // especially when reading / writing a lot of data
-        // (e.g. during sdcard format)
-        feed_watchdog();
+        
+        // sdcard calls a user callback on every succesfull disk IO.
+        // The application may use this as a progress indicator or to
+        // feed a watchdog timer, since disk reads/writes may block relatively
+        // long and unpredictably.
+        sdcard_call_IO_cb();
         return RES_OK;
     }
 

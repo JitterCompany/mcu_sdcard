@@ -10,10 +10,13 @@
 #define SD_CD_pin 1
 
 typedef bool (*line_handler)(void *context, char *line);
+typedef void (*DiskIOCallback)(void);
 
 typedef FIL sdcard_file;
 
-void sdcard_init(const GPIO *power_en_pin, const GPIO *sd_detect_pin);
+void sdcard_init(const GPIO *power_en_pin,
+        const GPIO *sd_detect_pin,
+        DiskIOCallback disk_IO_callback);
 void sdcard_deinit(void);
 bool sdcard_format(void);
 bool sdcard_detect(void);

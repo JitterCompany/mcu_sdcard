@@ -44,7 +44,8 @@
 #include <mcu_timing/delay.h>
 
 // Note: implemented in sdcard.c
-mci_card_struct* init_cardinfo(void);
+mci_card_struct* sdcard_init_cardinfo(void);
+void sdcard_call_IO_cb(void);
 
 typedef mci_card_struct CARD_HANDLE_T;
 
@@ -66,7 +67,7 @@ typedef mci_card_struct CARD_HANDLE_T;
  * functions.
  */
 // dummy: nothing to do
-#define FSMCI_CardInit()               (init_cardinfo())
+#define FSMCI_CardInit()               (sdcard_init_cardinfo())
 
 /**
  * @def		FSMCI_CardGetSectorCnt(hc)
