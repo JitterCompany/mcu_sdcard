@@ -21,6 +21,22 @@ static bool g_enabled;
 static const GPIO *g_sdcard_power_en_pin;
 static const GPIO *g_sdcard_detect_pin; // NOTE: unused for now..
 
+// forward declarations //
+static void sdmmc_waitms(uint32_t time);
+static uint32_t sdmmc_irq_driven_wait(void);
+static void sdmmc_setup_wakeup(void *bits);
+
+
+// NOTE: also used by fs_mci
+mci_card_struct* init_cardinfo(void)
+{
+    memset(&g_sdcardinfo, 0, sizeof(g_sdcardinfo));
+    g_sdcardinfo.card_info.evsetup_cb = sdmmc_setup_wakeup;
+    g_sdcardinfo.card_info.waitfunc_cb = sdmmc_irq_driven_wait;
+    g_sdcardinfo.card_info.msdelay_func = sdmmc_waitms;
+
+    return &g_sdcardinfo;
+}
 
 // Delay callback for timed SDIF/SDMMC functions
 static void sdmmc_waitms(uint32_t time)
@@ -296,10 +312,7 @@ enum SDCardStatus sdcard_enable(int *retry_count)
                           g_sdcard_power_en_pin->pin, true);
     }
 
-    memset(&g_sdcardinfo, 0, sizeof(g_sdcardinfo));
-    g_sdcardinfo.card_info.evsetup_cb = sdmmc_setup_wakeup;
-    g_sdcardinfo.card_info.waitfunc_cb = sdmmc_irq_driven_wait;
-    g_sdcardinfo.card_info.msdelay_func = sdmmc_waitms;
+    init_cardinfo();
 
     NVIC_EnableIRQ(SDIO_IRQn);
 

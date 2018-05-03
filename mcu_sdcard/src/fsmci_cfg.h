@@ -43,7 +43,11 @@
 #include <fatfs_lib/diskio.h>
 #include <mcu_timing/delay.h>
 
+// Note: implemented in sdcard.c
+mci_card_struct* init_cardinfo(void);
+
 typedef mci_card_struct CARD_HANDLE_T;
+
 
 /**
  * @def		FSMCI_CardAcquire(hc)
@@ -62,7 +66,7 @@ typedef mci_card_struct CARD_HANDLE_T;
  * functions.
  */
 // dummy: nothing to do
-#define FSMCI_CardInit()               (0)
+#define FSMCI_CardInit()               (init_cardinfo())
 
 /**
  * @def		FSMCI_CardGetSectorCnt(hc)
@@ -129,8 +133,6 @@ typedef mci_card_struct CARD_HANDLE_T;
 #define FSMCI_CardInsertWait(hc)        /* NGX board ignored SD_CD pin */
 #endif
 
-//extern CARD_HANDLE_T sdcardinfo;	/**< Type used for SD Card handle */
-extern void rtc_initialize(void);   /**< RTC initialization function */
 
 /**
  * @brief	Wait for the SD card to complete all operations and become ready
