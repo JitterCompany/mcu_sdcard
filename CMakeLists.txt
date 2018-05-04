@@ -51,7 +51,7 @@ CPM_AddModule("fatfs_lib"
 
 CPM_AddModule("mcu_timing"
     GIT_REPOSITORY "https://github.com/JitterCompany/mcu_timing.git"
-    GIT_TAG "1.5.4")
+    GIT_TAG "1.5.5")
 
 CPM_AddModule("c_utils"
     GIT_REPOSITORY "https://github.com/JitterCompany/c_utils.git"
