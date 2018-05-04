@@ -15,14 +15,16 @@ if("${MCU_PLATFORM}" STREQUAL "43xx_m4")
 
     CPM_AddModule("lpc_chip_43xx_m4"
         GIT_REPOSITORY "https://github.com/JitterCompany/lpc_chip_43xx_m4.git"
-        GIT_TAG "3.1.2")
+        GIT_TAG "3.2"
+        USE_EXISTING_VER TRUE)
 
 elseif("${MCU_PLATFORM}" STREQUAL "43xx_m0")
     message(STATUS "${CPM_MODULE_NAME}: Platform '43xx_m0' detected")
 
     CPM_AddModule("lpc_chip_43xx_m0"
         GIT_REPOSITORY "https://github.com/JitterCompany/lpc_chip_43xx_m0.git"
-        GIT_TAG "3.1.2")
+        GIT_TAG "3.2"
+        USE_EXISTING_VER TRUE)
 
     #elseif("${MCU_PLATFORM}" STREQUAL "11uxx")
     #message(STATUS "${CPM_MODULE_NAME}: Platform '11uxx' detected")
