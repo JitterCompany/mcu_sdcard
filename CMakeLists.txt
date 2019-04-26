@@ -43,7 +43,7 @@ include(cmake/chip_libraries.cmake)
 
 CPM_AddModule("lpc_tools"
     GIT_REPOSITORY "https://github.com/JitterCompany/lpc_tools.git"
-    GIT_TAG "2.5.2")
+    GIT_TAG "2.8.2")
 
 CPM_AddModule("fatfs_lib"
     GIT_REPOSITORY "https://github.com/JitterCompany/fatfs_lib.git"
@@ -51,7 +51,7 @@ CPM_AddModule("fatfs_lib"
 
 CPM_AddModule("mcu_timing"
     GIT_REPOSITORY "https://github.com/JitterCompany/mcu_timing.git"
-    GIT_TAG "1.5.5")
+    GIT_TAG "1.5.12")
 
 CPM_AddModule("c_utils"
     GIT_REPOSITORY "https://github.com/JitterCompany/c_utils.git"
