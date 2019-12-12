@@ -32,11 +32,25 @@ bool sdcard_move_file(const char *filename_old, const char *filename_new);
 bool sdcard_delete_file(const char *filename);
 
 /**
- * Delete a folder and any files in it.
+ * Delete a folder and any files directly in it (excluding files in sub-folders).
  *
  * NOTE: the delete will fail if the folder contains sub-folders.
  */
 bool sdcard_delete_dir(const char *dirname);
+
+/**
+ * Delete a folder and any files and/or subfolders in it recursively
+ * up to a total path length of 255 characters.
+ *
+ * Returns:
+ * -1: recursion too deep (internal path buffer too small)
+ * -3: error reading directory item
+ * -4: error deleting file
+ * -5: error deleting directory
+ *
+ *  n: n items deleted in total (0 if folder itself did not exist)
+ */
+int sdcard_delete_dir_recursive(const char *dirname);
 bool sdcard_create_dir(const char *dir);
 bool sdcard_free_space(uint32_t *free_MiB, uint32_t *total_MiB);
 

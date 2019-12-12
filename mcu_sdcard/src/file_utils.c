@@ -17,8 +17,9 @@ int folder_create_and_count(const char *name)
 bool make_file_path(char *result_path, size_t sizeof_result_path,
                     const char *folder, const char *file)
 {
-    result_path[0] = '\0';
-    strlcpy(result_path, folder, sizeof_result_path);
+    if(result_path != folder) {
+        strlcpy(result_path, folder, sizeof_result_path);
+    }
     strlcat(result_path, "/", sizeof_result_path);
     size_t len = strlcat(result_path, file, sizeof_result_path);
     if(len >= sizeof_result_path) {

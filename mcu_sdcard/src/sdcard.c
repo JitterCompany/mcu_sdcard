@@ -27,6 +27,7 @@ DiskIOCallback g_IO_cb;
 static void sdmmc_waitms(uint32_t time);
 static uint32_t sdmmc_irq_driven_wait(void);
 static void sdmmc_setup_wakeup(void *bits);
+static int _recursive_delete(char *path_buffer, size_t sizeof_path_buffer, FILINFO *fno);
 
 
 // NOTE: also used by fs_mci
@@ -496,5 +497,85 @@ bool sdcard_delete_dir(const char *dirname)
     int delete_count = sdcard_iterate_dir(dirname, delete_cb, NULL);
 
     return ((FR_OK == f_unlink(dirname)) || (delete_count == -2));
+}
+
+int sdcard_delete_dir_recursive(const char *dirname)
+{
+    FILINFO file;
+    char path_buffer[256];
+    if(strlcpy(path_buffer, dirname, sizeof(path_buffer)) >= sizeof(path_buffer)) {
+        return -1;
+    }
+
+    return _recursive_delete(path_buffer, sizeof(path_buffer), &file);
+}
+
+// TODO RM
+void log_info(const char format[], ...);
+
+static int _recursive_delete(char *path_buffer, size_t sizeof_path_buffer,
+        FILINFO *fno)
+{
+    int error = 0;
+    int result_count = 0;
+    const size_t path_len = strlen(path_buffer);
+
+    DIR dir;
+    if( FR_OK != f_opendir(&dir, path_buffer)) {
+        return 0;
+    }
+
+    for (;;) {
+        if (FR_OK != f_readdir(&dir, fno))
+        {
+            error = -3;
+            break;
+        }
+        if(fno->fname[0] == 0) {
+            break;  // Break on end of dir
+        }
+
+        if(!make_file_path(path_buffer, sizeof_path_buffer, path_buffer, fno->fname)) {
+            error = -1;
+            break;
+        }
+
+        // Delete subfolder (recursion)
+        if(fno->fattrib & AM_DIR) {
+            int deleted = _recursive_delete(path_buffer, sizeof_path_buffer, fno);
+            if(deleted < 0) {
+                error = deleted;
+                break;
+            }
+            result_count+= deleted;
+
+        // Delete file
+        } else {
+            if(FR_OK != f_unlink(path_buffer)) {
+                error = -4;
+                break;
+            }
+            result_count+= 1;
+        }
+
+        // path_buffer was reused to form path to sub-item(s): restore original string.
+        path_buffer[path_len] = 0;
+    }
+    // restore in case loop above was aborted
+    path_buffer[path_len] = 0;
+
+    f_closedir(&dir);
+
+    // Delete this folder itself
+    if(error == 0) {
+        if(FR_OK != f_unlink(path_buffer)) {
+            log_info("_DEBUG: unlink '%s' failed", path_buffer);
+            error = -5;
+        } else {
+            result_count+= 1;
+        }
+    }
+
+    return (error == 0) ? result_count : error;
 }
 
